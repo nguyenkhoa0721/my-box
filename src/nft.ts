@@ -76,10 +76,9 @@ class VoucherContract extends SmartContract {
     });
   }
 
-  // onlyOwner() {
-  //   this.merchantPubKey.getAndRequireEquals().assertEquals(this.sender);
-  // }
-  //@TODO: user must using LOY to mint Voucher
+  onlyOwner() {
+    this.merchantPubKey.getAndRequireEquals().assertEquals(this.sender);
+  }
 
   @method initState(merchantPubKey: PublicKey, totalSupply: UInt32) {
     this.merchantPubKey.set(merchantPubKey);
@@ -88,7 +87,7 @@ class VoucherContract extends SmartContract {
 
   @method
   async mint(voucher: Voucher) {
-    this.onlyOwner();
+    //@TODO: user must using LOY to mint Voucher
 
     //get current index
     let currentIdx = this.currentIdx.get();
