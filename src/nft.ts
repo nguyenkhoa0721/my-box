@@ -18,6 +18,7 @@ import {
   State,
   DeployArgs,
   Permissions,
+  Signature,
 } from 'o1js';
 
 class KVState extends Struct({
@@ -26,7 +27,7 @@ class KVState extends Struct({
 }) {}
 
 class Voucher extends Struct({
-  ownerPubKey: PublicKey,
+  ownerWitness: Field,
   useRandomCode: Field,
   uri: Field,
 }) {
@@ -34,7 +35,7 @@ class Voucher extends Struct({
     return Poseidon.hash(
       this.uri
         .toFields()
-        .concat(this.ownerPubKey.toFields())
+        .concat([this.ownerWitness])
         .concat([this.useRandomCode])
     );
   }
@@ -42,7 +43,7 @@ class Voucher extends Struct({
   use(useRandomCode: Field) {
     return new Voucher({
       uri: this.uri,
-      ownerPubKey: this.ownerPubKey,
+      ownerWitness: this.ownerWitness,
       useRandomCode: useRandomCode,
     });
   }
@@ -110,10 +111,15 @@ class VoucherContract extends SmartContract {
   }
 
   @method
-  async use(key: UInt32, voucher: Voucher, useRandomCode: Field) {
+  async use(
+    key: UInt32,
+    voucher: Voucher,
+    useRandomCode: Field,
+    ownerSignature: Signature
+  ) {
     // key.assertLessThanOrEqual(this.totalSupply.get());
     voucher.isUse().assertEquals(Bool(false));
-    voucher.ownerPubKey.assertEquals(this.sender);
+    voucher.ownerWitness.assertEquals(Poseidon.hash(ownerSignature.toFields()));
 
     let voucherHash = voucher.hash();
 
