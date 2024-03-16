@@ -76,9 +76,10 @@ class VoucherContract extends SmartContract {
     });
   }
 
-  onlyOwner() {
-    this.merchantPubKey.getAndRequireEquals().assertEquals(this.sender);
-  }
+  // onlyOwner() {
+  //   this.merchantPubKey.getAndRequireEquals().assertEquals(this.sender);
+  // }
+  //@TODO: user must using LOY to mint Voucher
 
   @method initState(merchantPubKey: PublicKey, totalSupply: UInt32) {
     this.merchantPubKey.set(merchantPubKey);
